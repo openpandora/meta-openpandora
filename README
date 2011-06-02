@@ -1,4 +1,4 @@
-This is the general machine/platform specific 'stuff' overlay for the OpenPandora device.
+This is the general hardware specific BSP overlay for the OpenPandora device.
 It should be used with openembedded-core (not old-style org.openembedded.dev).
 
 More information can be found at:
@@ -29,4 +29,3 @@ Send pull requests to OpenPandora Firmware mailing list:
                    http://openpandora.org/cgi-bin/mailman/listinfo/firmware-dev
                    
 Layer maintainers: John Willis <John.Willis at distant-earth.com>
-                   Michael Mrozek <EvilDragon at openpandora.org>

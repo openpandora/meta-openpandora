@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Calibrate Touchscreen
-Comment=Calibrates the touchscreen. Restart afterwards
-StartupNotify=false
-Exec=/usr/pandora/scripts/op_calibrate.sh
-Icon=input-tablet
-Terminal=false
-Type=Application
-Categories=System;
