@@ -1,9 +1,10 @@
 DESCRIPTION = "Install binary firmware for Bluetooth and WiFi into the image."
 LICENSE = "proprietary-binary"
 RRECOMMENDS_${PN} = "kernel-module-firmware-class"
-PR = "r4"
-
+PR = "r5"
+LIC_FILES_CHKSUM = "file://LICENCE;md5=c4073948801d7b82b41ddffd6c7288d0"
 SRC_URI = " \
+        file://LICENCE \
         file://brf6300.bin \
         file://wl1251-fw.bin \
         file://bluetooth-conf \        

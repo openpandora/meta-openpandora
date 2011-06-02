@@ -1,5 +1,6 @@
 DESCRIPTION = "Kernel drivers for the TI WL1251 WiFi chip found on the Pandora - Connected via SDIO"
 LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://COPYRIGHT;md5=d7810fab7487fb0aad327b76f1be7cd7"
 
 SRCREV = "ccb56baff992d682cc84eca10472298b2cce1bf1"
 

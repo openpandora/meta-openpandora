@@ -1,11 +1,15 @@
 DESCRIPTION = "Helper uboot boot scripts for the OpenPandora"
 LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 DEPENDS = "u-boot-mkimage-native"
 
-SRC_URI = "file://boot*"
+SRC_URI = " \
+	file://boot* \
+	file://LICENSE \
+"
 
-PR = "r2"
+PR = "r3"
 
 do_configure() {
 	cp ${WORKDIR}/boot* ${S}
