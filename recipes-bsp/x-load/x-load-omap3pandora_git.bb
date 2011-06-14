@@ -12,7 +12,7 @@ SRCREV = "b3646a83f9e67ec9a2de3182fd254557fd6ad9aa"
 PROVIDES = "x-load"
 
 PV = "1.42+${PR}+gitr${SRCREV}"
-PR ="r2"
+PR ="r3"
 PE = "1"
 
 SRC_URI = "git://git.openpandora.org/pandora-x-loader.git;branch=master;protocol=git"

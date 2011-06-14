@@ -1,11 +1,11 @@
 DESCRIPTION = "x-load bootloader loader"
 SECTION = "bootloaders"
 PRIORITY = "optional"
-LICENSE = "GPLv2+"
+LICENSE = "GPL"
 
-LIC_FILES_CHKSUM = "file://common/cmd_load.c;beginline=4;endline=22;md5=14420d7cc8dfb427d17ad407ddf8dc89"
+DEPENDS = "signgp-native"
 
-PARALLEL_MAKE = ""
+PARALLEL_MAKE=""
 
 EXTRA_OEMAKE = "CROSS_COMPILE=${TARGET_PREFIX}"
 
@@ -17,8 +17,6 @@ XLOAD_USB_IMAGE ?= "x-load-usb-${MACHINE}-${PV}-${PR}.bin"
 XLOAD_USB_SYMLINK ?= "x-load-usb-${MACHINE}.bin"
 MLO_IMAGE ?= "MLO-${MACHINE}-${PV}-${PR}"
 MLO_SYMLINK ?= "MLO-${MACHINE}"
-MLO_SYMLINK_NOMACHINE ?= "MLO"
-XLOAD_LOAD_ADDRESS ?= 0x40200800
 
 do_compile () {
 	unset LDFLAGS
@@ -26,18 +24,11 @@ do_compile () {
 	unset CPPFLAGS
 	oe_runmake distclean
 	oe_runmake ${XLOAD_MACHINE}
-	oe_runmake ift
+	oe_runmake
 }
-
-do_install () {
-	install -d ${D}/boot
-	install ${S}/x-load.bin.ift ${D}/boot/${MLO_IMAGE}
-	ln -sf ${MLO_IMAGE} ${D}/boot/${MLO_SYMLINK_NOMACHINE} 
-}
-
-FILES_${PN} = "/boot"
 
 do_deploy () {
+	signGP ${S}/x-load.bin
 	install -d ${DEPLOY_DIR_IMAGE}
 	install ${S}/x-load.bin.ift ${DEPLOY_DIR_IMAGE}/${XLOAD_IMAGE}
 	install ${S}/x-load.bin ${DEPLOY_DIR_IMAGE}/${XLOAD_USB_IMAGE}	
@@ -52,4 +43,4 @@ do_deploy () {
 	ln -sf ${MLO_IMAGE} ${MLO_SYMLINK}
 }
 do_deploy[dirs] = "${S}"
-addtask deploy before do_build after do_install
+addtask deploy before do_build after do_compile
