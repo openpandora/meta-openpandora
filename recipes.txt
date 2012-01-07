@@ -1,2 +1,6 @@
+recipes-binary       - Binary only firmware recipes.
 recipes-bsp          - Anything with links to the OpenPandora hardware configuration information.
-recipes-kernel       - The OpenPandora kernel and applications/libraries/firmware with strong kernel dependencies.
+recipes-core         - Extensions to existing upstream core recipes.
+recipes-devices      - Device drivers/Init scripts.
+recipes-graphics     - XOrg Config and such.
+recipes-kernel       - The OpenPandora kernel and anything with strong kernel dependencies.
