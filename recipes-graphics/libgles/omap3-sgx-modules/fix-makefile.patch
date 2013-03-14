@@ -1,0 +1,9 @@
+--- GFX_Linux_KM/Makefile.orig	2012-03-27 01:10:11.199588947 +0200
++++ GFX_Linux_KM/Makefile	2012-03-27 01:11:59.999588731 +0200
+@@ -1,4 +1,4 @@
+-export KERNELDIR = /opt/oe/stuff/build/tmp/work/beagleboard-angstrom-linux-gnueabi/linux-omap-2.6.29-r44/git/
++export KERNELDIR = ${KERNEL_SRC}
+ 
+ export KERNEL_PATH=$(KERNELDIR)
+ export KERNEL_SRC=$(KERNELDIR)
+

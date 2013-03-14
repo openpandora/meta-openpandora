@@ -1,0 +1,281 @@
+diff -rupNb GFX_Linux_KM/services4/3rdparty/bufferclass_ti/bc_cat.c GFX_Linux_KM.new/services4/3rdparty/bufferclass_ti/bc_cat.c
+--- GFX_Linux_KM/services4/3rdparty/bufferclass_ti/bc_cat.c	2010-08-11 16:04:41.000000000 +0300
++++ GFX_Linux_KM.new/services4/3rdparty/bufferclass_ti/bc_cat.c	2012-03-24 17:40:09.221642784 +0200
+@@ -39,6 +39,9 @@
+ 
+ #include <linux/dma-mapping.h>
+ 
++#include <linux/version.h>
++#define omap_rev_lt_3_0() (omap_rev() < OMAP3430_REV_ES3_0)
++
+ #define DEVNAME             "bccat"
+ #define DRVNAME             DEVNAME
+ #define DEVICE_COUNT        1
+@@ -121,7 +124,14 @@ static int width_align;
+ static struct file_operations bc_cat_fops = {
+     .open =  bc_open,
+     .release = bc_release,
++#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,36)
+     .ioctl = bc_ioctl,
++#else
++   .unlocked_ioctl = bc_ioctl,
++#ifdef CONFIG_COMPAT
++          .compat_ioctl = bc_ioctl,
++#endif
++#endif
+     .mmap =  bc_mmap,
+ };
+ 
+diff -rupNb GFX_Linux_KM/services4/3rdparty/bufferclass_ti/modules.order GFX_Linux_KM.new/services4/3rdparty/bufferclass_ti/modules.order
+--- GFX_Linux_KM/services4/3rdparty/bufferclass_ti/modules.order	2010-09-09 12:25:35.000000000 +0300
++++ GFX_Linux_KM.new/services4/3rdparty/bufferclass_ti/modules.order	1970-01-01 02:00:00.000000000 +0200
+@@ -1 +0,0 @@
+-kernel//proj/AVME10/mahesh/Graphics/Netra/Graphics_SDK_4_00_00_01/GFX_Linux_KM/services4/3rdparty/bufferclass_ti/bufferclass_ti.ko
+diff -rupNb GFX_Linux_KM/services4/3rdparty/dc_omap3430_linux/modules.order GFX_Linux_KM.new/services4/3rdparty/dc_omap3430_linux/modules.order
+--- GFX_Linux_KM/services4/3rdparty/dc_omap3430_linux/modules.order	2010-09-09 12:25:36.000000000 +0300
++++ GFX_Linux_KM.new/services4/3rdparty/dc_omap3430_linux/modules.order	1970-01-01 02:00:00.000000000 +0200
+@@ -1 +0,0 @@
+-kernel//proj/AVME10/mahesh/Graphics/Netra/Graphics_SDK_4_00_00_01/GFX_Linux_KM/services4/3rdparty/dc_omap3430_linux/omaplfb.ko
+diff -rupNb GFX_Linux_KM/services4/3rdparty/dc_omap3430_linux/omaplfb_displayclass.c GFX_Linux_KM.new/services4/3rdparty/dc_omap3430_linux/omaplfb_displayclass.c
+--- GFX_Linux_KM/services4/3rdparty/dc_omap3430_linux/omaplfb_displayclass.c	2010-09-08 09:06:41.000000000 +0300
++++ GFX_Linux_KM.new/services4/3rdparty/dc_omap3430_linux/omaplfb_displayclass.c	2012-03-24 17:41:07.171175165 +0200
+@@ -235,9 +235,9 @@ static OMAP_ERROR UnblankDisplay(OMAPLFB
+ {
+ 	int res;
+ 
+-	acquire_console_sem();
++	console_lock();
+ 	res = fb_blank(psDevInfo->psLINFBInfo, 0);
+-	release_console_sem();
++	console_unlock();
+ #if !defined (CONFIG_OMAP2_DSS)
+ 	/* DSS2 returns error if unblank from a non-suspend state */
+ 	if (res != 0)
+@@ -1113,7 +1113,7 @@ static OMAP_ERROR InitDev(OMAPLFB_DEVINF
+ 	OMAP_ERROR eError = OMAP_ERROR_GENERIC;
+ 	unsigned long FBSize;
+ 
+-	acquire_console_sem();
++	console_lock();
+ 
+ 	if (fb_idx < 0 || fb_idx >= num_registered_fb)
+ 	{
+@@ -1253,7 +1253,7 @@ static OMAP_ERROR InitDev(OMAPLFB_DEVINF
+ errModPut:
+ 	module_put(psLINFBOwner);
+ errRelSem:
+-	release_console_sem();
++	console_unlock();
+ 	return eError;
+ }
+ 
+@@ -1262,7 +1262,7 @@ static void DeInitDev(OMAPLFB_DEVINFO *p
+ 	struct fb_info *psLINFBInfo = psDevInfo->psLINFBInfo;
+ 	struct module *psLINFBOwner;
+ 
+-	acquire_console_sem();
++	console_lock();
+ 
+ 	psLINFBOwner = psLINFBInfo->fbops->owner;
+ 
+@@ -1273,7 +1273,7 @@ static void DeInitDev(OMAPLFB_DEVINFO *p
+ 
+ 	module_put(psLINFBOwner);
+ 
+-	release_console_sem();
++	console_unlock();
+ }
+ 
+ OMAP_ERROR OMAPLFBInit(void)
+diff -rupNb GFX_Linux_KM/services4/3rdparty/dc_omap3430_linux/omaplfb_linux.c GFX_Linux_KM.new/services4/3rdparty/dc_omap3430_linux/omaplfb_linux.c
+--- GFX_Linux_KM/services4/3rdparty/dc_omap3430_linux/omaplfb_linux.c	2012-03-26 22:23:48.537641318 +0300
++++ GFX_Linux_KM.new/services4/3rdparty/dc_omap3430_linux/omaplfb_linux.c	2012-03-24 17:42:17.063944507 +0200
+@@ -25,7 +25,7 @@
+  ******************************************************************************/
+ 
+ #ifndef AUTOCONF_INCLUDED
+-#include <linux/config.h>
++//#include <linux/config.h>
+ #endif
+ 
+ #include <linux/version.h>
+@@ -45,7 +45,7 @@
+ #include <asm/io.h>
+ 
+ #if (LINUX_VERSION_CODE > KERNEL_VERSION(2,6,26))
+-#include <plat/display.h>
++#include <video/omapdss.h>
+ #else 
+ #include <asm/arch-omap/display.h>
+ #endif 
+@@ -57,7 +57,7 @@ extern void omap_dispc_free_irq(unsigned
+ extern void omap_dispc_set_plane_base(int plane, IMG_UINT32 phys_addr);
+ #else
+ #if (LINUX_VERSION_CODE > KERNEL_VERSION(2,6,32))
+-#include <plat/display.h>
++#include <video/omapdss.h>
+ #else
+ #include <mach/display.h>
+ #endif
+diff -rupNb GFX_Linux_KM/services4/3rdparty/dc_ti8168_linux/modules.order GFX_Linux_KM.new/services4/3rdparty/dc_ti8168_linux/modules.order
+--- GFX_Linux_KM/services4/3rdparty/dc_ti8168_linux/modules.order	2010-09-08 17:44:40.000000000 +0300
++++ GFX_Linux_KM.new/services4/3rdparty/dc_ti8168_linux/modules.order	1970-01-01 02:00:00.000000000 +0200
+@@ -1 +0,0 @@
+-kernel//proj/AVME10/mahesh/Graphics/Netra/Graphics_SDK_4_00_00_01/GFX_Linux_KM/services4/3rdparty/dc_ti8168_linux/omaplfb.ko
+diff -rupNb GFX_Linux_KM/services4/srvkm/common/resman.c GFX_Linux_KM.new/services4/srvkm/common/resman.c
+--- GFX_Linux_KM/services4/srvkm/common/resman.c	2012-03-26 22:23:38.387715333 +0300
++++ GFX_Linux_KM.new/services4/srvkm/common/resman.c	2012-03-24 17:42:39.527096575 +0200
+@@ -29,7 +29,7 @@
+ 
+ #ifdef __linux__
+ #ifndef AUTOCONF_INCLUDED
+- #include <linux/config.h>
++//#include <linux/config.h>
+ #endif
+ 
+ #include <linux/version.h>
+diff -rupNb GFX_Linux_KM/services4/srvkm/env/linux/event.c GFX_Linux_KM.new/services4/srvkm/env/linux/event.c
+--- GFX_Linux_KM/services4/srvkm/env/linux/event.c	2010-03-05 11:47:57.000000000 +0200
++++ GFX_Linux_KM.new/services4/srvkm/env/linux/event.c	2012-03-24 17:43:16.340132850 +0200
+@@ -25,7 +25,7 @@
+  ******************************************************************************/
+ 
+ #ifndef AUTOCONF_INCLUDED
+- #include <linux/config.h>
++ //#include <linux/config.h>
+ #endif
+ 
+ #include <linux/version.h>
+diff -rupNb GFX_Linux_KM/services4/srvkm/env/linux/mmap.c GFX_Linux_KM.new/services4/srvkm/env/linux/mmap.c
+--- GFX_Linux_KM/services4/srvkm/env/linux/mmap.c	2010-03-05 11:47:57.000000000 +0200
++++ GFX_Linux_KM.new/services4/srvkm/env/linux/mmap.c	2012-03-24 17:43:16.343466155 +0200
+@@ -25,7 +25,7 @@
+  ******************************************************************************/
+ 
+ #ifndef AUTOCONF_INCLUDED
+- #include <linux/config.h>
++ //#include <linux/config.h>
+ #endif
+ 
+ #include <linux/version.h>
+diff -rupNb GFX_Linux_KM/services4/srvkm/env/linux/mm.c GFX_Linux_KM.new/services4/srvkm/env/linux/mm.c
+--- GFX_Linux_KM/services4/srvkm/env/linux/mm.c	2010-03-05 11:47:57.000000000 +0200
++++ GFX_Linux_KM.new/services4/srvkm/env/linux/mm.c	2012-03-24 17:43:16.373465914 +0200
+@@ -25,7 +25,7 @@
+  ******************************************************************************/
+ 
+ #ifndef AUTOCONF_INCLUDED
+- #include <linux/config.h>
++ //#include <linux/config.h>
+ #endif
+ 
+ #include <linux/version.h>
+diff -rupNb GFX_Linux_KM/services4/srvkm/env/linux/mm.h GFX_Linux_KM.new/services4/srvkm/env/linux/mm.h
+--- GFX_Linux_KM/services4/srvkm/env/linux/mm.h	2010-03-05 11:47:57.000000000 +0200
++++ GFX_Linux_KM.new/services4/srvkm/env/linux/mm.h	2012-03-24 17:43:16.373465914 +0200
+@@ -28,7 +28,7 @@
+ #define __IMG_LINUX_MM_H__
+ 
+ #ifndef AUTOCONF_INCLUDED
+- #include <linux/config.h>
++ //#include <linux/config.h>
+ #endif
+ 
+ #include <linux/version.h>
+diff -rupNb GFX_Linux_KM/services4/srvkm/env/linux/module.c GFX_Linux_KM.new/services4/srvkm/env/linux/module.c
+--- GFX_Linux_KM/services4/srvkm/env/linux/module.c	2010-03-05 11:47:57.000000000 +0200
++++ GFX_Linux_KM.new/services4/srvkm/env/linux/module.c	2012-03-24 17:43:16.376799220 +0200
+@@ -25,7 +25,7 @@
+  ******************************************************************************/
+ 
+ #ifndef AUTOCONF_INCLUDED
+- #include <linux/config.h>
++ //#include <linux/config.h>
+ #endif
+ 
+ #include <linux/init.h>
+diff -rupNb GFX_Linux_KM/services4/srvkm/env/linux/mutils.c GFX_Linux_KM.new/services4/srvkm/env/linux/mutils.c
+--- GFX_Linux_KM/services4/srvkm/env/linux/mutils.c	2010-03-05 11:47:57.000000000 +0200
++++ GFX_Linux_KM.new/services4/srvkm/env/linux/mutils.c	2012-03-24 17:43:16.380132526 +0200
+@@ -25,7 +25,7 @@
+  ******************************************************************************/
+ 
+ #ifndef AUTOCONF_INCLUDED
+-#include <linux/config.h>
++//#include <linux/config.h>
+ #endif
+ #include <linux/version.h>
+ 
+diff -rupNb GFX_Linux_KM/services4/srvkm/env/linux/mutils.h GFX_Linux_KM.new/services4/srvkm/env/linux/mutils.h
+--- GFX_Linux_KM/services4/srvkm/env/linux/mutils.h	2010-03-05 11:47:57.000000000 +0200
++++ GFX_Linux_KM.new/services4/srvkm/env/linux/mutils.h	2012-03-24 17:43:16.380132526 +0200
+@@ -28,7 +28,7 @@
+ #define __IMG_LINUX_MUTILS_H__
+ 
+ #ifndef AUTOCONF_INCLUDED
+-#include <linux/config.h>
++//#include <linux/config.h>
+ #endif
+ 
+ #include <linux/version.h>
+diff -rupNb GFX_Linux_KM/services4/srvkm/env/linux/osfunc.c GFX_Linux_KM.new/services4/srvkm/env/linux/osfunc.c
+--- GFX_Linux_KM/services4/srvkm/env/linux/osfunc.c	2010-03-05 11:47:57.000000000 +0200
++++ GFX_Linux_KM.new/services4/srvkm/env/linux/osfunc.c	2012-03-24 17:43:52.139843966 +0200
+@@ -25,7 +25,7 @@
+  ******************************************************************************/
+ 
+ #ifndef AUTOCONF_INCLUDED
+- #include <linux/config.h>
++ //#include <linux/config.h>
+ #endif
+ 
+ #include <linux/version.h>
+@@ -1516,7 +1516,7 @@ typedef struct TIMER_CALLBACK_DATA_TAG
+ 
+ static TIMER_CALLBACK_DATA sTimers[OS_MAX_TIMERS];
+ 
+-static spinlock_t sTimerStructLock = SPIN_LOCK_UNLOCKED;
++static DEFINE_SPINLOCK(sTimerStructLock);
+ 
+ static IMG_VOID OSTimerCallbackWrapper(IMG_UINT32 ui32Data)
+ {
+diff -rupNb GFX_Linux_KM/services4/srvkm/env/linux/proc.c GFX_Linux_KM.new/services4/srvkm/env/linux/proc.c
+--- GFX_Linux_KM/services4/srvkm/env/linux/proc.c	2010-03-05 11:47:57.000000000 +0200
++++ GFX_Linux_KM.new/services4/srvkm/env/linux/proc.c	2012-03-24 17:43:16.386799140 +0200
+@@ -25,7 +25,7 @@
+  ******************************************************************************/
+ 
+ #ifndef AUTOCONF_INCLUDED
+- #include <linux/config.h>
++ //#include <linux/config.h>
+ #endif
+ 
+ #include <linux/init.h>
+diff -rupNb GFX_Linux_KM/services4/srvkm/env/linux/pvr_debug.c GFX_Linux_KM.new/services4/srvkm/env/linux/pvr_debug.c
+--- GFX_Linux_KM/services4/srvkm/env/linux/pvr_debug.c	2010-03-05 11:47:57.000000000 +0200
++++ GFX_Linux_KM.new/services4/srvkm/env/linux/pvr_debug.c	2012-03-24 17:43:16.390132446 +0200
+@@ -26,7 +26,7 @@
+ 
+   
+ #ifndef AUTOCONF_INCLUDED
+- #include <linux/config.h>
++ //#include <linux/config.h>
+ #endif
+ 
+ #include <asm/io.h>
+diff -rupNb GFX_Linux_KM/services4/system/omap3430/sysutils_linux.c GFX_Linux_KM.new/services4/system/omap3430/sysutils_linux.c
+--- GFX_Linux_KM/services4/system/omap3430/sysutils_linux.c	2012-03-26 22:23:55.090926870 +0300
++++ GFX_Linux_KM.new/services4/system/omap3430/sysutils_linux.c	2012-03-24 17:45:44.752268587 +0200
+@@ -30,10 +30,11 @@
+ #include <linux/hardirq.h>
+ #include <linux/spinlock.h>
+ #include <asm/bug.h>
++#include <linux/smp.h>
+ 
+ #if (LINUX_VERSION_CODE > KERNEL_VERSION(2,6,31))
+ #include <linux/semaphore.h>
+-#include <plat/resource.h>
++#include <asm/resource.h>
+ #include <plat/omap-pm.h>
+ #else
+ 

@@ -1,0 +1,3 @@
+setenv bootargs rw root=/dev/mmcblk0p1 rootwait vram=3000K omapfb.vram=0:3000K
+ext2load mmc 0:1 0x80300000 boot/uImage
+bootm 0x80300000
