@@ -6,12 +6,12 @@ KERNEL_IMAGETYPE = "uImage"
 COMPATIBLE_MACHINE = "openpandora"
 
 # This is on the pandora-3.2 branch
-SRCREV = "33f77242a125e36ab26776ba0bdb303a498edd3e"
+SRCREV = "71c451a58d430c7033bc2957589dee51335d57c0"
 
 SRC_URI = " \
            git://git.openpandora.org/pandora-kernel.git;protocol=git;branch=pandora-3.2 \
 "          
-PV = "3.2.26-pandora+${PR}+git${SRCREV}"
+PV = "3.2.39-pandora+${PR}+git${SRCREV}"
 
 S = "${WORKDIR}/git"
 
