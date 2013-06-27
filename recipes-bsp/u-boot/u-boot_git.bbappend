@@ -8,12 +8,12 @@ COMPATIBLE_MACHINE = "openpandora"
 DEFAULT_PREFERENCE_openpandora = "1"
 
 # Latest SRCREV.
-SRCREV_pn-${PN}_omap3-pandora = "55d0d2dd5d07fbfd57309997c38da5281b9824b5"
+SRCREV_pn-${PN}_openpandora = "20e1f77c88d5e78475e208f5642ed0a7ed3f9dc7"
 
-PR ="r3"
+PR ="r7"
 PV_openpandora = "omap3-pandora+${PR}+gitr${SRCREV}"
 
-SRC_URI_openpandora = "git://git.openpandora.org/pandora-u-boot.git;branch=pandora-2011.12;protocol=git \
+SRC_URI_openpandora = "git://github.com/urjaman/pandora-u-boot.git;branch=pandora-2013.07-rc1;protocol=git \
 "
 
 UBOOT_MACHINE_openpandora = "omap3_pandora_config"
