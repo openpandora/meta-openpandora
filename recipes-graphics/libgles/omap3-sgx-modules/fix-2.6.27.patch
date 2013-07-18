@@ -1,0 +1,27 @@
+diff -ur GFX_Linux_KM/services4/3rdparty/dc_omap3430_linux/omaplfb_linux.c /tmp/gs/GFX_Linux_KM/services4/3rdparty/dc_omap3430_linux/omaplfb_linux.c
+--- GFX_Linux_KM/services4/3rdparty/dc_omap3430_linux/omaplfb_linux.c	2010-09-08 09:06:41.000000000 +0300
++++ GFX_Linux_KM/services4/3rdparty/dc_omap3430_linux/omaplfb_linux.c	2011-01-22 19:29:58.814352221 +0200
+@@ -56,7 +56,11 @@
+ extern void omap_dispc_free_irq(unsigned long, void (*)(void *), void *);
+ extern void omap_dispc_set_plane_base(int plane, IMG_UINT32 phys_addr);
+ #else
++#if (LINUX_VERSION_CODE > KERNEL_VERSION(2,6,32))
+ #include <plat/display.h>
++#else
++#include <mach/display.h>
++#endif
+ #include <linux/console.h>
+ #include <linux/fb.h>
+ static omap_dispc_isr_t *pOMAPLFBVSyncISRHandle = NULL;
+diff -ur GFX_Linux_KM/services4/system/omap3430/sysutils_linux.c /tmp/gs/GFX_Linux_KM/services4/system/omap3430/sysutils_linux.c
+--- GFX_Linux_KM/services4/system/omap3430/sysutils_linux.c	2010-03-05 11:47:57.000000000 +0200
++++ GFX_Linux_KM/services4/system/omap3430/sysutils_linux.c	2011-01-22 19:28:23.287592886 +0200
+@@ -39,8 +39,6 @@
+ 
+ #if (LINUX_VERSION_CODE > KERNEL_VERSION(2,6,26))
+ #include <linux/semaphore.h>
+-#include <mach/resource.h>
+-#include <mach/omap-pm.h>
+ #else
+ #include <asm/semaphore.h>
+ #if (LINUX_VERSION_CODE > KERNEL_VERSION(2,6,22))

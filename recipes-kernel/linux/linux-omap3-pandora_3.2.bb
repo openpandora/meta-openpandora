@@ -1,17 +1,17 @@
-require linux.inc
+require recipes-kernel/linux/linux.inc
 
 DESCRIPTION = "Linux kernel for the OpenPandora handheld"
 KERNEL_IMAGETYPE = "uImage"
 
-COMPATIBLE_MACHINE = "omap3-pandora"
+COMPATIBLE_MACHINE = "openpandora"
 
 # This is on the pandora-3.2 branch
-SRCREV = "8f763d95d980e12fc2aa09a561980532fc7cec47"
+SRCREV = "e353c52b9d4d1ecc5f9cc36dd78d7405c9cf2c48"
 
 SRC_URI = " \
            git://git.openpandora.org/pandora-kernel.git;protocol=git;branch=pandora-3.2 \
 "          
-PV = "3.2.30-pandora+${PR}+git${SRCREV}"
+PV = "3.2.45-pandora+${PR}+git${SRCREV}"
 
 S = "${WORKDIR}/git"
 

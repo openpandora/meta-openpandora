@@ -1,0 +1,12 @@
+diff -ur bluez-4.62_/tools/hciattach_tialt.c bluez-4.62/tools/hciattach_tialt.c
+--- bluez-4.62_/tools/hciattach_tialt.c	2012-04-04 01:53:50.532804002 +0300
++++ bluez-4.62/tools/hciattach_tialt.c	2012-04-04 01:56:51.012804001 +0300
+@@ -234,7 +234,7 @@
+ 				((brf_chip > 7) ? "unknown" : c_brf_chip[brf_chip]),
+ 				brf_chip);
+ 
+-		sprintf(fw, "/etc/firmware/%s.bin", c_brf_chip[brf_chip]);
++		sprintf(fw, "/lib/firmware/%s.bin", c_brf_chip[brf_chip]);
+ 		texas_load_firmware(fd, fw);
+ 
+ 		texas_change_speed(fd, speed);

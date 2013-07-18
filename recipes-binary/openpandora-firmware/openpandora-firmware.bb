@@ -24,4 +24,4 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 FILES_${PN} += "${base_libdir}/firmware ${sysconfdir}/sysconfig"
 
-COMPATIBLE_MACHINE = "omap3-pandora"
+COMPATIBLE_MACHINE = "openpandora"

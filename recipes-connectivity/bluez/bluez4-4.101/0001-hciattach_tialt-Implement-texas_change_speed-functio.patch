@@ -1,0 +1,74 @@
+From 8d5a91d5e07bf16ce5639127d17c21de94ffdb00 Mon Sep 17 00:00:00 2001
+From: Urja Rannikko <urjaman@gmail.com>
+Date: Thu, 29 Mar 2012 19:23:59 +0300
+Subject: [PATCH 1/2] hciattach_tialt: Implement texas_change_speed function.
+
+---
+ tools/hciattach_tialt.c |   38 ++++++++++++++++++++++++++++++++++----
+ 1 files changed, 34 insertions(+), 4 deletions(-)
+
+diff --git a/tools/hciattach_tialt.c b/tools/hciattach_tialt.c
+index c3caa49..9b876e4 100644
+--- a/tools/hciattach_tialt.c
++++ b/tools/hciattach_tialt.c
+@@ -88,15 +88,45 @@ static int read_command_complete(int fd, unsigned short opcode, unsigned char le
+ 	return resp.status == 0 ? 0 : -1;
+ }
+ 
++static int poll_wait_reply(int fd, int ms) {
++	struct pollfd pfd;
++	pfd.fd = fd;
++	pfd.events = POLLIN;
++	pfd.revents = 0;
++	return poll(&pfd, 1, ms);
++}
++
+ typedef struct {
+ 	uint8_t uart_prefix;
+ 	hci_command_hdr hci_hdr;
+ 	uint32_t speed;
+ } __attribute__((packed)) texas_speed_change_cmd_t;
+ 
+-static int texas_change_speed(int fd, uint32_t speed)
+-{
+-	return 0;
++static int texas_change_speed(int fd, uint32_t speed) {
++	int i;
++	texas_speed_change_cmd_t cmd;
++	fprintf(stdout,"Sending speed change command..\n");
++
++	cmd.uart_prefix = HCI_COMMAND_PKT;
++	cmd.hci_hdr.opcode = 0xff36;
++	cmd.hci_hdr.plen = sizeof(cmd.speed);
++	cmd.speed = speed;
++
++	for (i=0;i<3;i++) {
++		int n = write(fd,&cmd,sizeof(cmd));
++		if (n < 0) {
++			perror("Failed to write speed change command");
++			return -1;
++		}
++		if (n < sizeof(cmd)) {
++			fprintf(stderr, "Wanted to write %lu bytes, could only write %d. Stop\n", sizeof(cmd), n);
++			return -1;
++		}
++		if (poll_wait_reply(fd,100)!=1) continue;
++		return read_command_complete(fd,cmd.hci_hdr.opcode,cmd.hci_hdr.plen);
++	}
++	fprintf(stderr,"Speed change command timeout.\n");
++	return -1;
+ }
+ 
+ static int texas_load_firmware(int fd, const char *firmware) {
+@@ -235,7 +265,7 @@ int texasalt_init(int fd, int speed, struct termios *ti)
+ 		sprintf(fw, "/etc/firmware/%s.bin", c_brf_chip[brf_chip]);
+ 		texas_load_firmware(fd, fw);
+ 
+-		texas_change_speed(fd, speed);
++		if (texas_change_speed(fd, speed)) return -1;
+ 	}
+ 	nanosleep(&tm, NULL);
+ 	return 0;
+-- 
+1.7.8.1
+
