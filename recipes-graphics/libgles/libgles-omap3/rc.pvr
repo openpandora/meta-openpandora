@@ -22,7 +22,6 @@ fi
 
 if [ "$1" = "stop" -o  "$1" = "restart" ]; then
 	echo Stopping PVR
-	rmmod bufferclass_ti
 	rmmod omaplfb 2>/dev/null
 	rmmod pvrsrvkm 2>/dev/null
 fi
@@ -41,18 +40,10 @@ fbset -vyres $(expr $YRES \* 3)
 
 sgxprepare () {
 	echo Starting PVR
-	insmod $(busybox find /lib/modules/$(uname -r) -name "pvrsrvkm.ko")
-	modprobe omaplfb
-	modprobe bufferclass_ti
 
-	pvr_maj=`grep "pvrsrvkm$" /proc/devices | cut -b1,2,3`
-        bc_maj=`grep "bc" /proc/devices | cut -b1,2,3`
+	insmod /lib/modules/$(uname -r)/kernel/drivers/gpu/pvr/pvrsrvkm.ko
+	insmod /lib/modules/$(uname -r)/kernel/drivers/gpu/pvr/omaplfb.ko
 
-	if [ -e /dev/pvrsrvkm ] ; then
-		rm -f /dev/pvrsrvkm
-	fi
-
-	mknod /dev/pvrsrvkm c $pvr_maj 0
 	chmod 666 /dev/pvrsrvkm
 
 	touch /etc/powervr-esrev
