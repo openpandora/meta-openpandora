@@ -1,0 +1,25 @@
+From bb596bdb47f7722953e5194ce331bb84a82ef087 Mon Sep 17 00:00:00 2001
+From: Giannis Damigos <giannis.damigos@gmail.com>
+Date: Mon, 4 Nov 2013 19:02:24 +0200
+Subject: [PATCH] Makefile.fwinst-fix-install-breakage
+
+---
+ scripts/Makefile.fwinst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/Makefile.fwinst b/scripts/Makefile.fwinst
+index 6bf8e87..c3f69ae 100644
+--- a/scripts/Makefile.fwinst
++++ b/scripts/Makefile.fwinst
+@@ -42,7 +42,7 @@ quiet_cmd_install = INSTALL $(subst $(srctree)/,,$@)
+ $(installed-fw-dirs):
+ 	$(call cmd,mkdir)
+ 
+-$(installed-fw): $(INSTALL_FW_PATH)/%: $(obj)/% | $(INSTALL_FW_PATH)/$$(dir %)
++$(installed-fw): $(INSTALL_FW_PATH)/%: $(obj)/% | $$(dir $(INSTALL_FW_PATH)/%)
+ 	$(call cmd,install)
+ 
+ PHONY +=  __fw_install __fw_modinst FORCE
+-- 
+1.8.4.2
+

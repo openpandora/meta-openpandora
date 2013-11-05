@@ -10,6 +10,7 @@ SRCREV = "e353c52b9d4d1ecc5f9cc36dd78d7405c9cf2c48"
 
 SRC_URI = " \
            git://git.openpandora.org/pandora-kernel.git;protocol=git;branch=pandora-3.2 \
+           file://0001-Makefile.fwinst-fix-install-breakage.patch \
 "          
 PV = "3.2.45-pandora+${PR}+git${SRCREV}"
 
