@@ -6,13 +6,13 @@ KERNEL_IMAGETYPE = "uImage"
 COMPATIBLE_MACHINE = "openpandora"
 
 # This is on the pandora-3.2 branch
-SRCREV = "e353c52b9d4d1ecc5f9cc36dd78d7405c9cf2c48"
+SRCREV = "249197068c299a407a72f3c4cb88e75f3cdf3d6b"
 
 SRC_URI = " \
            git://git.openpandora.org/pandora-kernel.git;protocol=git;branch=pandora-3.2 \
            file://0001-Makefile.fwinst-fix-install-breakage.patch \
-"          
-PV = "3.2.45-pandora+${PR}+git${SRCREV}"
+           "
+PV = "3.2.53-pandora+${PR}+git${SRCREV}"
 
 S = "${WORKDIR}/git"
 
