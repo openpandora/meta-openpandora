@@ -2,9 +2,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 # Don't forget to bump PRINC if you update the extra files.
 PRINC = "3"
 
-THISDIR := "${@os.path.dirname(bb.data.getVar('FILE', d, True))}"
-FILESPATH =. "${@base_set_filespath(["${THISDIR}/${PN}"], d)}:"
-
 SRC_URI_append_openpandora = " file://xorg.conf.d/10-evdev.conf \
                                  file://xorg.conf.d/20-omapfb.conf \
                                  file://xorg.conf.d/99-calibration.conf \
